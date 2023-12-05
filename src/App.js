@@ -1,28 +1,55 @@
 import { useState } from "react";
 
 function App() {
-  const [hold, sethold] = useState(0);
+  const [hold, setHold] = useState(0);
   function handleAddHold() {
-    sethold(hold + 30);
+    setHold(hold + 3);
   }
   function handleSubtractHold() {
-    sethold(hold - 30);
+    if (hold != 0) {
+      setHold(hold - 3);
+    }
+    return;
   }
-  const [startCountDown, setStartCountdown] = useState(0);
+
+  const [rest, setRest] = useState(0);
+  function handleAddRest() {
+    setRest(rest + 3);
+  }
+  function handleSubtractRest() {
+    if (rest != 0) {
+      setRest(rest - 3);
+    }
+    return;
+  }
+
+  const [startCountDown, setStartCountdown] = useState("");
   function handleStartCountdown() {
-    setStartCountdown(hold - 1);
-    console.log(startCountDown);
+    let count = hold;
+    function a() {
+      setStartCountdown(count);
+      if (count > 0) {
+        count--;
+      }
+      return;
+    }
+    setInterval(a, 1000);
+    console.log(count);
   }
 
   return (
     <div>
-      <Timer hold={hold} startCountDown={startCountDown}></Timer>
+      <Timer rest={rest} hold={hold} startCountDown={startCountDown}></Timer>
       <Hold
         hold={hold}
         onAddHold={handleAddHold}
         onSubtractHold={handleSubtractHold}
       ></Hold>
-      <Rest></Rest>
+      <Rest
+        rest={rest}
+        onAddRest={handleAddRest}
+        onSubtractRest={handleSubtractRest}
+      ></Rest>
       <Reps></Reps>
       <Start onStartCountdown={handleStartCountdown} hold={hold}></Start>
     </div>
@@ -30,11 +57,13 @@ function App() {
 }
 
 export default App;
-function Timer({ hold, startCountDown }) {
+function Timer({ hold, startCountDown, rest }) {
   return (
     <div>
-      <h3>hold/rest for</h3>
+      <h3>hold for</h3>
       <h1>{hold}</h1>
+      <h3>rest for</h3>
+      <h1>{rest}</h1>
       <div>countdown: {startCountDown}</div>
     </div>
   );
@@ -43,19 +72,19 @@ function Hold({ hold, onAddHold, onSubtractHold }) {
   return (
     <div>
       <h3>hold</h3>
-      <Button onClick={onSubtractHold}>-30 sec</Button>
+      <Button onClick={onSubtractHold}>-3 sec</Button>
       {hold}
-      <Button onClick={onAddHold}>+30 sec</Button>
+      <Button onClick={onAddHold}>+3 sec</Button>
     </div>
   );
 }
-function Rest() {
+function Rest({ rest, onAddRest, onSubtractRest }) {
   return (
     <div>
       <h3>rest</h3>
-      <Button>-30 sec</Button>
-      00
-      <Button>+30 sec</Button>
+      <Button onClick={onSubtractRest}>-3 sec</Button>
+      {rest}
+      <Button onClick={onAddRest}>+3 sec</Button>
     </div>
   );
 }
@@ -69,14 +98,14 @@ function Reps() {
     </div>
   );
 }
-function Start({ hold, onStartCountdown }) {
+function Start({ onStartCountdown }) {
   return (
     <div>
       <Button onClick={onStartCountdown}>Start</Button>
     </div>
   );
 }
-function Button({ children, onClick }) {
+function Button({ children, onClick, hold }) {
   return (
     <button className="button" onClick={onClick}>
       {children}
