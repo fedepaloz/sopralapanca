@@ -2,6 +2,13 @@ import { useState } from "react";
 
 function App() {
   const [hold, setHold] = useState(0);
+
+  const [startCountDownHold, setStartCountdownHold] = useState(0);
+
+  const [startCountDownRest, setStartCountdownRest] = useState(0);
+
+  const [rest, setRest] = useState(0);
+
   function handleAddHold() {
     setHold(hold + 3);
   }
@@ -12,7 +19,6 @@ function App() {
     return;
   }
 
-  const [rest, setRest] = useState(0);
   function handleAddRest() {
     setRest(rest + 3);
   }
@@ -23,23 +29,38 @@ function App() {
     return;
   }
 
-  const [startCountDown, setStartCountdown] = useState("");
   function handleStartCountdown() {
-    let count = hold;
+    let countHold = hold;
+    let countRest = rest;
     function a() {
-      setStartCountdown(count);
-      if (count > 0) {
-        count--;
+      setStartCountdownHold(countHold);
+      if (countHold > 0) {
+        countHold--;
+      } else {
+        setStartCountdownRest(countRest);
+        if (countRest > 0) {
+          countRest--;
+        }
       }
       return;
     }
     setInterval(a, 1000);
-    console.log(count);
+  }
+  function handleReset() {
+    setStartCountdownHold(0);
+    setStartCountdownRest(0);
+    setHold(0);
+    setRest(0);
   }
 
   return (
     <div>
-      <Timer rest={rest} hold={hold} startCountDown={startCountDown}></Timer>
+      <Timer
+        rest={rest}
+        hold={hold}
+        startCountDownHold={startCountDownHold}
+        startCountDownRest={startCountDownRest}
+      ></Timer>
       <Hold
         hold={hold}
         onAddHold={handleAddHold}
@@ -52,26 +73,27 @@ function App() {
       ></Rest>
       <Reps></Reps>
       <Start onStartCountdown={handleStartCountdown} hold={hold}></Start>
+      <Reset onReset={handleReset}></Reset>
     </div>
   );
 }
 
 export default App;
-function Timer({ hold, startCountDown, rest }) {
+function Timer({ startCountDownHold, startCountDownRest }) {
   return (
     <div>
       <h3>hold for</h3>
-      <h1>{hold}</h1>
+      <h1>{startCountDownHold}</h1>
       <h3>rest for</h3>
-      <h1>{rest}</h1>
-      <div>countdown: {startCountDown}</div>
+      <h1>{startCountDownRest}</h1>
     </div>
   );
 }
 function Hold({ hold, onAddHold, onSubtractHold }) {
   return (
-    <div>
+    <div className="hold">
       <h3>hold</h3>
+
       <Button onClick={onSubtractHold}>-3 sec</Button>
       {hold}
       <Button onClick={onAddHold}>+3 sec</Button>
@@ -80,8 +102,9 @@ function Hold({ hold, onAddHold, onSubtractHold }) {
 }
 function Rest({ rest, onAddRest, onSubtractRest }) {
   return (
-    <div>
+    <div className="rest">
       <h3>rest</h3>
+
       <Button onClick={onSubtractRest}>-3 sec</Button>
       {rest}
       <Button onClick={onAddRest}>+3 sec</Button>
@@ -90,11 +113,9 @@ function Rest({ rest, onAddRest, onSubtractRest }) {
 }
 function Reps() {
   return (
-    <div>
+    <div className="reps">
       <h3>reps</h3>
-      <Button>-1</Button>
-      00
-      <Button>+1</Button>
+      <Button>-1</Button>0<Button>+1</Button>
     </div>
   );
 }
@@ -105,7 +126,14 @@ function Start({ onStartCountdown }) {
     </div>
   );
 }
-function Button({ children, onClick, hold }) {
+function Reset({ onReset }) {
+  return (
+    <div>
+      <Button onClick={onReset}>Reset</Button>
+    </div>
+  );
+}
+function Button({ children, onClick }) {
   return (
     <button className="button" onClick={onClick}>
       {children}
