@@ -9,11 +9,13 @@ function App() {
 
   const [rest, setRest] = useState(0);
 
+  const [partialReps, setPartialReps] = useState(0);
+
   function handleAddHold() {
     setHold(hold + 3);
   }
   function handleSubtractHold() {
-    if (hold != 0) {
+    if (hold !== 0) {
       setHold(hold - 3);
     }
     return;
@@ -23,34 +25,37 @@ function App() {
     setRest(rest + 3);
   }
   function handleSubtractRest() {
-    if (rest != 0) {
+    if (rest !== 0) {
       setRest(rest - 3);
     }
     return;
   }
 
   function handleStartCountdown() {
+    const intervalT = setInterval(a, 1000);
     let countHold = hold;
     let countRest = rest;
     function a() {
-      setStartCountdownHold(countHold);
-      if (countHold > 0) {
-        countHold--;
+      if (countHold >= 0) {
+        setStartCountdownHold(countHold--);
       } else {
-        setStartCountdownRest(countRest);
-        if (countRest > 0) {
-          countRest--;
+        if (countRest >= 0) {
+          setStartCountdownRest(countRest--);
         }
       }
-      return;
+      if (countRest <= -1) {
+        clearInterval(intervalT);
+      }
     }
-    setInterval(a, 1000);
+    setPartialReps(partialReps + 1);
   }
+
   function handleReset() {
     setStartCountdownHold(0);
     setStartCountdownRest(0);
     setHold(0);
     setRest(0);
+    setPartialReps(0);
   }
 
   return (
@@ -71,7 +76,7 @@ function App() {
         onAddRest={handleAddRest}
         onSubtractRest={handleSubtractRest}
       ></Rest>
-      <Reps></Reps>
+      <Reps partialReps={partialReps}></Reps>
       <Start onStartCountdown={handleStartCountdown} hold={hold}></Start>
       <Reset onReset={handleReset}></Reset>
     </div>
@@ -81,11 +86,29 @@ function App() {
 export default App;
 function Timer({ startCountDownHold, startCountDownRest }) {
   return (
-    <div>
+    /*  <div className="timer">
       <h3>hold for</h3>
       <h1>{startCountDownHold}</h1>
       <h3>rest for</h3>
       <h1>{startCountDownRest}</h1>
+    </div> */
+    <div>
+      {startCountDownHold >= 0 && (
+        <>
+          <div className="timer-red">
+            <h3>hold for</h3>
+            <h1>{startCountDownHold}</h1>
+          </div>
+        </>
+      )}
+      {startCountDownHold === 0 && (
+        <>
+          <div className="timer-green">
+            <h3>rest for</h3>
+            <h1>{startCountDownRest}</h1>
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -111,11 +134,10 @@ function Rest({ rest, onAddRest, onSubtractRest }) {
     </div>
   );
 }
-function Reps() {
+function Reps({ partialReps }) {
   return (
     <div className="reps">
-      <h3>reps</h3>
-      <Button>-1</Button>0<Button>+1</Button>
+      <h3>reps {partialReps}</h3>
     </div>
   );
 }

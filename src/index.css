@@ -26,3 +26,10 @@ button:hover {
   background-color: #ffffff;
   color: #3498db;
 }
+
+.timer-red {
+  background-color: red;
+}
+.timer-green {
+  background-color: green;
+}
